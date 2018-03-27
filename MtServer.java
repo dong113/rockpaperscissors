@@ -1,19 +1,16 @@
 /**
- * MTClient.java
+ * MTServer.java
  *
- * This program implements a simple multithreaded chat client.  It connects to the
- * server (assumed to be localhost on port 7654) and starts two threads:
- * one for listening for data sent from the server, and another that waits
- * for the user to type something in that will be sent to the server.
- * Anything sent to the server is broadcast to all clients.
+ * This program implements a simple multithreaded chat server.  Every client that
+ * connects to the server can broadcast data to all other clients.
+ * The server stores an ArrayList of sockets to perform the broadcast.
  *
- * The MTClient uses a ClientListener whose code is in a separate file.
- * The ClientListener runs in a separate thread, recieves messages form the server,
- * and displays them on the screen.
+ * The MTServer uses a ClientHandler whose code is in a separate file.
+ * When a client connects, the MTServer starts a ClientHandler in a separate thread
+ * to receive messages from the client.
  *
- * Data received is sent to the output screen, so it is possible that as
- * a user is typing in information a message from the server will be
- * inserted.
+ * To test, start the server first, then start multiple clients and type messages
+ * in the client windows.
  *
  */
 
@@ -22,107 +19,45 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.util.Scanner;
+import java.util.ArrayList;
 
-public class MtClient {
-  /**
-   * main method.
-   * @params not used.
-   */
-  public static void main(String[] args) {
+public class MtServer {
+  // Maintain list of all client sockets for broadcast
+  private ArrayList<Socket> socketList;
+
+  public MtServer() {
+    socketList = new ArrayList<Socket>();
+  }
+
+  private void getConnection() {
+    // Wait for a connection from the client
     try {
-      String hostname = "localhost";
-      int port = 7654;
-
-      System.out.println("Connecting to server on port " + port);
-      Socket connectionSock = new Socket(hostname, port);
-
-      DataOutputStream serverOutput = new DataOutputStream(connectionSock.getOutputStream());
-
-      System.out.println("Connection made, congratualtions!. \n");
-
-      // Start a thread to listen and display data sent by the server
-      ClientListener listener = new ClientListener(connectionSock);
-      Thread theThread = new Thread(listener);
-      theThread.start();
-
-
-      System.out.println("Welcome to (R)ock, (P)aper, (S)cissors!");
-      System.out.println("To make a valid choice, please read between the brackets above!");
-      System.out.println("If at anytime you wishe to (Q)uit");
-
-      boolean game = true;
-      Integer play = 1;
-
-      while (play == true) {
-        System.out.println("Round number" + play + "Take a guess!");
-        Scanner keyboard = new Scanner(System.in);
-        String info = keyboard.nextLine();
-
-         if (info != "R" || "P" || "S" || "Q") {
-          System.out.println("Invalid input, remember: Choices are case sensitive!");
-          info = keyboard.nextLine();
-         }
-
-         serverOutput.writeBytes(data + "\n");
-
-          while(data.equals("Q")) {
-          System.out.println("now exiting");
-          System.out(0);
-          break;
-
-          String inputInfo = listener.dataTransfer();
-         }
-        if(dataTransfer.equals(inputInfo)) {
-
-          System.out.println("Tie, Try again!");
-        }
-
-        else if (data.equals("R") && inputInfo.equals("S")) {
-
-          System.out.println("Rock Wins!");
-        }
-
-        else if (data.equals("P") && inputInfo.equals("S")) {
-
-          System.out.println("Paper Wins!");
-
-        }
-
-        else if (data.equals("R") && inputInfo.equals("P")) {
-
-          System.out.println("Rock Wins!");
-        }
-
-        else if (data.equals("S") && inputInfo.equals("R")) {
-
-          System.out.println("Scissors Wins!");
-        }
-
-        else if (data.equals("S") && inputInfo.equals("P")) {
-         
-          System.out.println("Scissors Wins!");
-
-        }
-
-        else if (data.equals("P") && inputInfo.equals("R")) {
-
-          System.out.println("Paper Wins!");
-
-        }
-        ++play;
-        System.out.println();
+      System.out.println("Waiting for client connections on port 7654.");
+      ServerSocket serverSock = new ServerSocket(7654);
+      // This is an infinite loop, the user will have to shut it down
+      // using control-c
+      while (true) {
+        Socket connectionSock = serverSock.accept();
+        // Add this socket to the list
+        socketList.add(connectionSock);
+        // Send to ClientHandler the socket and arraylist of all sockets
+        ClientHandler handler = new ClientHandler(connectionSock, this.socketList);
+        Thread theThread = new Thread(handler);
+        theThread.start();
       }
-
-      // Read input from the keyboard and send it to everyone else.
-      // The only way to quit is to hit control-c, but a quit command
-      // could easily be added.
-      } catch(SocketException ex) {
-        System.out.println("Closing socket");
+      // Will never get here, but if the above loop is given
+      // an exit condition then we'll go ahead and close the socket
+      //serverSock.close();
     } catch (IOException e) {
       System.out.println(e.getMessage());
     }
   }
-} // MtClient
+
+  public static void main(String[] args) {
+    MtServer server = new MtServer();
+    server.getConnection();
+  }
+} // MtServer

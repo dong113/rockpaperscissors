@@ -31,19 +31,6 @@ public class MtClient {
    * main method.
    * @params not used.
    */
-
-  public static String outType(String data){
-    if (data.equalsIgnoreCase("r")) {
-      return "rock";
-    }
-    else if (data.equalsIgnoreCase("p")) {
-      return "paper";
-    }
-    else {
-      return "scissors";
-    }
-  }
-
   public static void main(String[] args) {
     try {
       String hostname = "localhost";
@@ -54,28 +41,86 @@ public class MtClient {
 
       DataOutputStream serverOutput = new DataOutputStream(connectionSock.getOutputStream());
 
-      System.out.println("Connection made.\nEnter 'r' for rock, 'p' for paper, and 's' for scissors.");
+      System.out.println("Connection made, congratualtions!. \n");
 
       // Start a thread to listen and display data sent by the server
       ClientListener listener = new ClientListener(connectionSock);
       Thread theThread = new Thread(listener);
       theThread.start();
 
+
+      System.out.println("Welcome to (R)ock, (P)aper, (S)cissors!");
+      System.out.println("To make a valid choice, please read between the brackets above!");
+      System.out.println("If at anytime you wishe to (Q)uit");
+
+      boolean game = true;
+      Integer play = 1;
+
+      while (play == true) {
+        System.out.println("Round number" + play + "Take a guess!");
+        Scanner keyboard = new Scanner(System.in);
+        String info = keyboard.nextLine();
+
+         if (!info.equals("R") ||  "P" || "S" || "Q") {
+          System.out.println("Invalid input, remember: Choices are case sensitive!");
+          info = keyboard.nextLine();
+         }
+
+         serverOutput.writeBytes(data + "\n");
+
+          while(data.equals("Q")) {
+          System.out.println("now exiting");
+          System.out(0);
+          break;
+
+          String inputInfo = listener.dataTransfer();
+         }
+        if(dataTransfer.equals(inputInfo)) {
+
+          System.out.println("Tie, Try again!");
+        }
+
+        else if (data.equals("R") && inputInfo.equals("S")) {
+
+          System.out.println("Rock Wins!");
+        }
+
+        else if (data.equals("P") && inputInfo.equals("S")) {
+
+          System.out.println("Paper Wins!");
+
+        }
+
+        else if (data.equals("R") && inputInfo.equals("P")) {
+
+          System.out.println("Rock Wins!");
+        }
+
+        else if (data.equals("S") && inputInfo.equals("R")) {
+
+          System.out.println("Scissors Wins!");
+        }
+
+        else if (data.equals("S") && inputInfo.equals("P")) {
+         
+          System.out.println("Scissors Wins!");
+
+        }
+
+        else if (data.equals("P") && inputInfo.equals("R")) {
+
+          System.out.println("Paper Wins!");
+
+        }
+        ++play;
+        System.out.println();
+      }
+
       // Read input from the keyboard and send it to everyone else.
       // The only way to quit is to hit control-c, but a quit command
       // could easily be added.
-      Scanner keyboard = new Scanner(System.in);
-      while (true) {
-        String data = keyboard.nextLine();
-        String rps = outType(data);
-        if (data.equalsIgnoreCase("r") || data.equalsIgnoreCase("p") || data.equalsIgnoreCase("s")) {
-          serverOutput.writeBytes("Your opponent chose " + rps + "\n");
-          //System.out.println("you chose " + rps);
-        }
-        else {
-            
-        }
-      }
+      } catch(SocketException ex) {
+        System.out.println("Closing socket");
     } catch (IOException e) {
       System.out.println(e.getMessage());
     }
