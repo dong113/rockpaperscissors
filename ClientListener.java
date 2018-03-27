@@ -24,8 +24,9 @@ public class ClientListener implements Runnable {
     this.connectionSock = sock;
   }
 //returns values from other clients, instead of printing it to screen
+  public void run(){}
    public String returnOpponentInfo() {
-    String data = "";
+    String thisData = "";
     try {
       BufferedReader serverInput = new BufferedReader(
           new InputStreamReader(connectionSock.getInputStream()));
@@ -33,7 +34,7 @@ public class ClientListener implements Runnable {
       // Get data sent from the server
       String serverText = serverInput.readLine();
       if (serverInput != null) {
-        data = serverText;
+        thisData = serverText;
       } else {
         // Connection was lost
         System.out.println("Closing connection for: " + connectionSock);
@@ -45,7 +46,7 @@ public class ClientListener implements Runnable {
       System.out.println("Error: " + e.toString());
     }
 
-    return data;
+    return thisData;
   }
 
   /**

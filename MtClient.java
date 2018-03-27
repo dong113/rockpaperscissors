@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import java.util.Scanner;
+import java.net.SocketException;
 
 public class MtClient {
   /**
@@ -41,7 +42,7 @@ public class MtClient {
 
       DataOutputStream serverOutput = new DataOutputStream(connectionSock.getOutputStream());
 
-      System.out.println("Connection made, congratualtions!. \n");
+      System.out.println("Connection made, congratualtions!" + "\n");
 
       // Start a thread to listen and display data sent by the server
       ClientListener listener = new ClientListener(connectionSock);
@@ -56,26 +57,35 @@ public class MtClient {
       boolean game = true;
       Integer play = 1;
 
-      while (play == true) {
+      while (game == true) {
         System.out.println("Round number" + play + "Take a guess!");
         Scanner keyboard = new Scanner(System.in);
-        String info = keyboard.nextLine();
+        String data = keyboard.nextLine();
 
-         if (!info.equals("R") ||  "P" || "S" || "Q") {
+         if (data.equals("r") || data.equals("p") || data.equals("s") || data.equals("q")) {
           System.out.println("Invalid input, remember: Choices are case sensitive!");
-          info = keyboard.nextLine();
+          data = keyboard.nextLine();
          }
 
          serverOutput.writeBytes(data + "\n");
 
-          while(data.equals("Q")) {
+          if(data.equals("Q")) {
           System.out.println("now exiting");
-          System.out(0);
+          game = false;
           break;
+        }
 
-          String inputInfo = listener.dataTransfer();
-         }
-        if(dataTransfer.equals(inputInfo)) {
+
+          String inputInfo = listener.returnOpponentInfo();
+
+          if(inputInfo.equals("Q")) {
+            System.out.println("Other player is no longer connected, now disconnecting");
+            game = false;
+            break;
+          }
+
+         
+        if(inputInfo.equals(data)) {
 
           System.out.println("Tie, Try again!");
         }
@@ -119,7 +129,8 @@ public class MtClient {
       // Read input from the keyboard and send it to everyone else.
       // The only way to quit is to hit control-c, but a quit command
       // could easily be added.
-      } catch(SocketException ex) {
+      connectionSock.close();
+    } catch (SocketException ex) {
         System.out.println("Closing socket");
     } catch (IOException e) {
       System.out.println(e.getMessage());
