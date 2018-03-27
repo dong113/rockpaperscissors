@@ -40,10 +40,11 @@ public class ClientHandler implements Runnable {
         // Get data sent from a client
         String clientText = clientInput.readLine();
         if (clientText != null) {
-          System.out.println("Received: " + clientText);
+          System.out.println("connectionSock played: " + clientText);
           // Turn around and output this data
           // to all other clients except the one
           // that sent us this information
+          
           for (Socket s : socketList) {
             if (s != connectionSock) {
               DataOutputStream clientOutput = new DataOutputStream(s.getOutputStream());

@@ -31,6 +31,19 @@ public class MtClient {
    * main method.
    * @params not used.
    */
+
+  public static String outType(String data){
+    if (data.equalsIgnoreCase("r")) {
+      return "rock";
+    }
+    else if (data.equalsIgnoreCase("p")) {
+      return "paper";
+    }
+    else {
+      return "scissors";
+    }
+  }
+
   public static void main(String[] args) {
     try {
       String hostname = "localhost";
@@ -41,7 +54,7 @@ public class MtClient {
 
       DataOutputStream serverOutput = new DataOutputStream(connectionSock.getOutputStream());
 
-      System.out.println("Connection made.");
+      System.out.println("Connection made.\nEnter 'r' for rock, 'p' for paper, and 's' for scissors.");
 
       // Start a thread to listen and display data sent by the server
       ClientListener listener = new ClientListener(connectionSock);
@@ -54,7 +67,14 @@ public class MtClient {
       Scanner keyboard = new Scanner(System.in);
       while (true) {
         String data = keyboard.nextLine();
-        serverOutput.writeBytes(data + "\n");
+        String rps = outType(data);
+        if (data.equalsIgnoreCase("r") || data.equalsIgnoreCase("p") || data.equalsIgnoreCase("s")) {
+          serverOutput.writeBytes("Your opponent chose " + rps + "\n");
+          //System.out.println("you chose " + rps);
+        }
+        else {
+            
+        }
       }
     } catch (IOException e) {
       System.out.println(e.getMessage());
