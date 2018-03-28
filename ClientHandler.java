@@ -40,7 +40,7 @@ public class ClientHandler implements Runnable {
         // Get data sent from a client
         String clientText = clientInput.readLine();
         if (clientText != null) {
-          System.out.println("connectionSock played: " + clientText);
+          System.out.println("Received from a client: " + clientText);
           // Turn around and output this data
           // to all other clients except the one
           // that sent us this information
@@ -53,7 +53,7 @@ public class ClientHandler implements Runnable {
           }
         } else {
           // Connection was lost
-          System.out.println("Closing connection for socket " + connectionSock);
+          System.out.println("Closing connection for the follwing: " + connectionSock);
           // Remove from arraylist
           socketList.remove(connectionSock);
           connectionSock.close();

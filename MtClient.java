@@ -49,31 +49,44 @@ public class MtClient {
       Thread theThread = new Thread(listener);
       theThread.start();
 
-
-      System.out.println("Welcome to (R)ock, (P)aper, (S)cissors!");
-      System.out.println("To make a valid choice, please read between the brackets above!");
-      System.out.println("If at anytime you wishe to (Q)uit");
-
-      boolean game = true;
       Integer play = 1;
+      boolean game = true;
+
+      System.out.println("Welcome to (R)ock, (P)aper, (S)cissors! " + "\n");
+      System.out.println("To make a valid choice, please read between the brackets above! ");
+      System.out.println("At anytime you may (Q)uit ");
+
+      
+      
 
       while (game == true) {
-        System.out.println("Round number" + play + "Take a guess!");
+        System.out.println("Round " + play + "," + " Your Pick: " + "\n");
         Scanner keyboard = new Scanner(System.in);
         String data = keyboard.nextLine();
-
+          boolean goodBad = false;
+          while (goodBad != false); {
          if (data.equals("r") || data.equals("p") || data.equals("s") || data.equals("q")) {
-          System.out.println("Invalid input, remember: Choices are case sensitive!");
+          System.out.println("Invalid input, remember: Choices are case sensitive!" + "\n");
+          goodBad = true;
+        }
+          else {
+            System.out.println("Invalid. Come one! read the instructions!");
           data = keyboard.nextLine();
          }
+       }
 
          serverOutput.writeBytes(data + "\n");
+
+         
+
 
           if(data.equals("Q")) {
           System.out.println("now exiting");
           game = false;
           break;
         }
+
+          System.out.println("Please be patient and wait for the other player to make a move" + "\n");
 
 
           String inputInfo = listener.returnOpponentInfo();
@@ -85,7 +98,7 @@ public class MtClient {
           }
 
          
-        if(inputInfo.equals(data)) {
+        if (inputInfo.equals(data)) {
 
           System.out.println("Tie, Try again!");
         }
@@ -97,18 +110,18 @@ public class MtClient {
 
         else if (data.equals("P") && inputInfo.equals("S")) {
 
-          System.out.println("Paper Wins!");
+          System.out.println("Scissors Wins!");
 
         }
 
         else if (data.equals("R") && inputInfo.equals("P")) {
 
-          System.out.println("Rock Wins!");
+          System.out.println("Paper Wins!");
         }
 
         else if (data.equals("S") && inputInfo.equals("R")) {
 
-          System.out.println("Scissors Wins!");
+          System.out.println("Rock Wins!");
         }
 
         else if (data.equals("S") && inputInfo.equals("P")) {
