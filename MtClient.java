@@ -21,9 +21,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import java.net.Socket;
-
 import java.net.SocketException;
 import java.util.Scanner;
 
@@ -36,80 +34,75 @@ public class MtClient {
     try {
       String hostname = "localhost";
       int port = 7654;
+      Integer play = 1;
+      boolean game = true; //setting the game repeat to true
 
       System.out.println("Connecting to server on port " + port);
-      Socket connectionSock = new Socket(hostname, port);
+      Socket connectionSock = new Socket(hostname, port); // setting connection socket
 
       DataOutputStream serverOutput = new DataOutputStream(connectionSock.getOutputStream());
 
       System.out.println("Connection made, congratualtions!" + "\n");
+      System.out.println("Welcome to (R)ock, (P)aper, (S)cissors! " + "\n");
+      System.out.println("To make a valid choice, please read between the brackets above! ");
+      System.out.println("At anytime you may (Q)uit ");
 
       // Start a thread to listen and display data sent by the server
       ClientListener listener = new ClientListener(connectionSock);
       Thread theThread = new Thread(listener);
       theThread.start();
 
-      System.out.println("Welcome to (R)ock, (P)aper, (S)cissors! " + "\n");
-      System.out.println("To make a valid choice, please read between the brackets above! ");
-      System.out.println("At anytime you may (Q)uit ");
-
-      Integer play = 1;
-      boolean game = true;
-
-      while (game == true) {
+    
+      while (game == true) { //conditions while playing game equals true
         System.out.println("Round " + play + "," + " Your Pick: " + "\n");
         Scanner keyboard = new Scanner(System.in);
         String data = keyboard.nextLine();
-        boolean goodBad = false;
-        while (goodBad != false) {
+        boolean goodBad = false; //setting option to fales
+        while (goodBad == true) { //if lower case, exit
           if (data.equals("r") || data.equals("p") || data.equals("s") || data.equals("q")) {
             System.out.println("Invalid input, remember: Choices are case sensitive!" + "\n");
-            goodBad = true;
-          } else {
+            goodBad = true; //change variable
+          } else { 
             System.out.println("Invalid. Come one! read the instructions!");
             data = keyboard.nextLine();
           }
         }
 
-        serverOutput.writeBytes(data + "\n");
+        serverOutput.writeBytes(data + "\n"); //Write to bytes
+        System.out.println("Please be patient and wait for the other player to make a move" + "\n");
+      
+        String inputInfo = listener.returnOpponentInfo();
+
+        if (inputInfo.equals(data)) { //Rock Paper Scissors Conditions
+          System.out.println("Tie, Try again!");
+        } else if (data.equals("R") && inputInfo.equals("S")) {
+          System.out.println("Rock Wins. Please try again!");
+        } else if (data.equals("P") && inputInfo.equals("S")) {
+          System.out.println("Scissors Wins. Please try again!");
+        } else if (data.equals("R") && inputInfo.equals("P")) {
+          System.out.println("Paper Wins. Please try again!");
+        } else if (data.equals("S") && inputInfo.equals("R")) {
+          System.out.println("Rock Wins. Please try again!");
+        } else if (data.equals("S") && inputInfo.equals("P")) {
+          System.out.println("Scissors Wins. Please try again!");
+        } else if (data.equals("P") && inputInfo.equals("R")) {
+          System.out.println("Paper Wins. Please try again!");
+        }
 
 
-
-
-        if (data.equals("Q")) {
+        if (inputInfo.equals("Q")) { //Client option to quit
+          System.out.println("Other player is no longer connected, now disconnecting");
+          game = false;
+          break;
+        }
+        if (data.equals("Q")) { //Other players option to quit
           System.out.println("now exiting");
           game = false;
           break;
         }
 
-        System.out.println("Please be patient and wait for the other player to make a move" + "\n");
-
-
-        String inputInfo = listener.returnOpponentInfo();
-
-        if (inputInfo.equals("Q")) {
-          System.out.println("Other player is no longer connected, now disconnecting");
-          game = false;
-          break;
-        }
-
-
-        if (inputInfo.equals(data)) {
-          System.out.println("Tie, Try again!");
-        } else if (data.equals("R") && inputInfo.equals("S")) {
-          System.out.println("Rock Wins!");
-        } else if (data.equals("P") && inputInfo.equals("S")) {
-          System.out.println("Scissors Wins!");
-        } else if (data.equals("R") && inputInfo.equals("P")) {
-          System.out.println("Paper Wins!");
-        } else if (data.equals("S") && inputInfo.equals("R")) {
-          System.out.println("Rock Wins!");
-        } else if (data.equals("S") && inputInfo.equals("P")) {
-          System.out.println("Scissors Wins!");
-        } else if (data.equals("P") && inputInfo.equals("R")) {
-          System.out.println("Paper Wins!");
-        }
-        ++play;
+        
+        ++play; //incriment the game
         System.out.println();
       }
 
