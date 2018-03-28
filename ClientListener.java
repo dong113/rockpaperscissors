@@ -23,9 +23,13 @@ public class ClientListener implements Runnable {
   ClientListener(Socket sock) {
     this.connectionSock = sock;
   }
-//returns values from other clients, instead of printing it to screen
+  
   public void run(){}
-   public String returnOpponentInfo() {
+
+  /**
+   * Gets message from server and returns it to clients.
+   */
+  public String returnOpponentInfo() {
     String thisData = "";
     try {
       BufferedReader serverInput = new BufferedReader(
@@ -52,7 +56,7 @@ public class ClientListener implements Runnable {
   /**
    * Gets message from server and dsiplays it to the user.
    */
-/*
+  /*
   public void run() {
     try {
       BufferedReader serverInput = new BufferedReader(

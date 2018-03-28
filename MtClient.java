@@ -24,8 +24,8 @@ import java.io.InputStreamReader;
 
 import java.net.Socket;
 
-import java.util.Scanner;
 import java.net.SocketException;
+import java.util.Scanner;
 
 public class MtClient {
   /**
@@ -49,91 +49,65 @@ public class MtClient {
       Thread theThread = new Thread(listener);
       theThread.start();
 
-      Integer play = 1;
-      boolean game = true;
-
       System.out.println("Welcome to (R)ock, (P)aper, (S)cissors! " + "\n");
       System.out.println("To make a valid choice, please read between the brackets above! ");
       System.out.println("At anytime you may (Q)uit ");
 
-      
-      
+      Integer play = 1;
+      boolean game = true;
 
       while (game == true) {
         System.out.println("Round " + play + "," + " Your Pick: " + "\n");
         Scanner keyboard = new Scanner(System.in);
         String data = keyboard.nextLine();
-          boolean goodBad = false;
-          while (goodBad != false); {
-         if (data.equals("r") || data.equals("p") || data.equals("s") || data.equals("q")) {
-          System.out.println("Invalid input, remember: Choices are case sensitive!" + "\n");
-          goodBad = true;
-        }
-          else {
+        boolean goodBad = false;
+        while (goodBad != false) {
+          if (data.equals("r") || data.equals("p") || data.equals("s") || data.equals("q")) {
+            System.out.println("Invalid input, remember: Choices are case sensitive!" + "\n");
+            goodBad = true;
+          } else {
             System.out.println("Invalid. Come one! read the instructions!");
-          data = keyboard.nextLine();
-         }
-       }
+            data = keyboard.nextLine();
+          }
+        }
 
-         serverOutput.writeBytes(data + "\n");
-
-         
+        serverOutput.writeBytes(data + "\n");
 
 
-          if(data.equals("Q")) {
+
+
+        if (data.equals("Q")) {
           System.out.println("now exiting");
           game = false;
           break;
         }
 
-          System.out.println("Please be patient and wait for the other player to make a move" + "\n");
+        System.out.println("Please be patient and wait for the other player to make a move" + "\n");
 
 
-          String inputInfo = listener.returnOpponentInfo();
+        String inputInfo = listener.returnOpponentInfo();
 
-          if(inputInfo.equals("Q")) {
-            System.out.println("Other player is no longer connected, now disconnecting");
-            game = false;
-            break;
-          }
+        if (inputInfo.equals("Q")) {
+          System.out.println("Other player is no longer connected, now disconnecting");
+          game = false;
+          break;
+        }
 
-         
+
         if (inputInfo.equals(data)) {
-
           System.out.println("Tie, Try again!");
-        }
-
-        else if (data.equals("R") && inputInfo.equals("S")) {
-
+        } else if (data.equals("R") && inputInfo.equals("S")) {
           System.out.println("Rock Wins!");
-        }
-
-        else if (data.equals("P") && inputInfo.equals("S")) {
-
+        } else if (data.equals("P") && inputInfo.equals("S")) {
           System.out.println("Scissors Wins!");
-
-        }
-
-        else if (data.equals("R") && inputInfo.equals("P")) {
-
+        } else if (data.equals("R") && inputInfo.equals("P")) {
           System.out.println("Paper Wins!");
-        }
-
-        else if (data.equals("S") && inputInfo.equals("R")) {
-
+        } else if (data.equals("S") && inputInfo.equals("R")) {
           System.out.println("Rock Wins!");
-        }
-
-        else if (data.equals("S") && inputInfo.equals("P")) {
-         
+        } else if (data.equals("S") && inputInfo.equals("P")) {
           System.out.println("Scissors Wins!");
-
-        }
-
-        else if (data.equals("P") && inputInfo.equals("R")) {
-
+        } else if (data.equals("P") && inputInfo.equals("R")) {
           System.out.println("Paper Wins!");
-
         }
         ++play;
         System.out.println();
@@ -144,7 +118,7 @@ public class MtClient {
       // could easily be added.
       connectionSock.close();
     } catch (SocketException ex) {
-        System.out.println("Closing socket");
+      System.out.println("Closing socket");
     } catch (IOException e) {
       System.out.println(e.getMessage());
     }
